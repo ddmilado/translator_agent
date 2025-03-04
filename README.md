@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Document Translation Service
 
-## Getting Started
+A modern Next.js application that allows users to upload documents and translate them between different languages. Built with Next.js, Tailwind CSS, and Appwrite.
 
-First, run the development server:
+## Features
 
+- Upload document files (PDF, text, etc.)
+- Select source and target languages
+- Real-time translation status updates
+- Beautiful, responsive UI with gradient design
+- Secure file handling with Appwrite storage
+- Error handling and loading states
+
+## Prerequisites
+
+- Node.js 18.0 or later
+- An Appwrite account and project
+- npm or yarn package manager
+
+## Setup Instructions
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd translator-agent
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Configure Appwrite:
+   - Create an Appwrite project at [https://cloud.appwrite.io](https://cloud.appwrite.io)
+   - Create a database and collection named 'translations'
+   - Create a storage bucket for document files
+   - Update the Appwrite configuration in `app/lib/appwrite.ts` with your project details:
+     - Project ID
+     - API Endpoint
+     - Database ID
+
+4. Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/app` - Next.js application directory
+  - `/components` - React components
+  - `/lib` - Utility functions and configurations
+- `public` - Static assets
+- `package.json` - Project dependencies and scripts
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create a `.env.local` file in the root directory with the following variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_APPWRITE_ENDPOINT=your-endpoint
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contributing
 
-## Deploy on Vercel
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details
