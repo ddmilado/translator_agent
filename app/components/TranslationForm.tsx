@@ -6,7 +6,7 @@ import { ID } from 'appwrite';
 import { cn } from '../lib/utils';
 import { SUPPORTED_LANGUAGES, SUPPORTED_FILE_TYPES, formatFileSize } from '../lib/utils';
 
-const BUCKET_ID = '67c790e1000c4d3c7c8d'; // Add your Appwrite bucket ID here
+const BUCKET_ID = '67c79bfc0018aa4924d3'; // Add your Appwrite bucket ID here
 
 export default function TranslationForm() {
   const [file, setFile] = useState<File | null>(null);
