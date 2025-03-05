@@ -6,6 +6,8 @@ import { ID } from 'appwrite';
 import { cn } from '../lib/utils';
 import { SUPPORTED_LANGUAGES, SUPPORTED_FILE_TYPES, formatFileSize } from '../lib/utils';
 
+const BUCKET_ID = '67c790e1000c4d3c7c8d'; // Add your Appwrite bucket ID here
+
 export default function TranslationForm() {
   const [file, setFile] = useState<File | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState('en');
@@ -31,7 +33,7 @@ export default function TranslationForm() {
           
           if (response.status === 'completed' && response.translatedFileId) {
             setTranslationStatus('completed');
-            const downloadUrl = storage.getFileDownload(response.translatedFileId);
+            const downloadUrl = storage.getFileDownload(BUCKET_ID, response.translatedFileId);
             setDownloadUrl(downloadUrl.href);
             clearInterval(interval);
           } else if (response.status === 'error') {
@@ -82,7 +84,7 @@ export default function TranslationForm() {
 
     try {
       const uploadResponse = await storage.createFile(
-        'default',
+        BUCKET_ID,
         ID.unique(),
         file
       );
