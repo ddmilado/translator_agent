@@ -34,7 +34,7 @@ export default function TranslationForm() {
           if (response.status === 'completed' && response.translatedFileId) {
             setTranslationStatus('completed');
             const downloadUrl = storage.getFileDownload(BUCKET_ID, response.translatedFileId);
-            setDownloadUrl(downloadUrl.href);
+            setDownloadUrl(downloadUrl);
             clearInterval(interval);
           } else if (response.status === 'error') {
             setTranslationStatus('error');
