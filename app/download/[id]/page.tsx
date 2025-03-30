@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import Link from 'next/link';
 
-export default function DownloadPage({ params }: { params: { id: string } }) {
+type Props = {
+  params: { id: string }
+}
+
+export default function DownloadPage({ params }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
