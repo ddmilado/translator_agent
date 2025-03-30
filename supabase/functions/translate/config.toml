@@ -1,0 +1,12 @@
+# This configuration file specifies the required permissions for the translate function
+
+[functions.translate]
+description = "Edge function to handle document translation"
+verify_jwt = true
+
+# Define the permissions needed for this function
+[functions.translate.permissions]
+supabase.storage.documents.read = true
+supabase.storage.documents.write = true
+supabase.translations.read = true
+supabase.translations.write = true

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { storage, databases, TRANSLATIONS_COLLECTION_ID, DATABASE_ID } from '../lib/appwrite';
-import { ID } from 'appwrite';
+import { supabase } from '../lib/supabase';
+import { useRouter } from 'next/navigation';
 import { cn } from '../lib/utils';
 import { SUPPORTED_LANGUAGES, SUPPORTED_FILE_TYPES, formatFileSize } from '../lib/utils';
 
-const BUCKET_ID = '67c79bfc0018aa4924d3'; // Add your Appwrite bucket ID here
+// Supabase storage bucket name for document uploads
+const BUCKET_NAME = 'documents';
 
 export default function TranslationForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -19,26 +20,31 @@ export default function TranslationForm() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
+  const router = useRouter();
+  
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
     if (translationId && translationStatus === 'pending') {
       interval = setInterval(async () => {
         try {
-          const response = await databases.getDocument(
-            DATABASE_ID,
-            TRANSLATIONS_COLLECTION_ID,
-            translationId
-          );
+          const { data: translation, error: fetchError } = await supabase
+            .from('translations')
+            .select('*')
+            .eq('id', translationId)
+            .single();
           
-          if (response.status === 'completed' && response.translatedFileId) {
+          if (fetchError) throw fetchError;
+          
+          if (translation.status === 'completed' && translation.translated_file_path) {
             setTranslationStatus('completed');
-            const downloadUrl = storage.getFileDownload(BUCKET_ID, response.translatedFileId);
-            setDownloadUrl(downloadUrl);
             clearInterval(interval);
-          } else if (response.status === 'error') {
+            
+            // Redirect to download page
+            router.push(`/download/${translationId}`);
+          } else if (translation.status === 'error' || translation.status === 'failed') {
             setTranslationStatus('error');
-            setError('Translation failed. Please try again.');
+            setError(translation.error || 'Translation failed. Please try again.');
             clearInterval(interval);
           }
         } catch (error) {
@@ -50,7 +56,7 @@ export default function TranslationForm() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [translationId, translationStatus]);
+  }, [translationId, translationStatus, router]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -83,26 +89,34 @@ export default function TranslationForm() {
     setError(null);
 
     try {
-      const uploadResponse = await storage.createFile(
-        BUCKET_ID,
-        ID.unique(),
-        file
-      );
+      // Upload file to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(fileName, file);
 
-      const translationRequest = await databases.createDocument(
-        DATABASE_ID,
-        TRANSLATIONS_COLLECTION_ID,
-        ID.unique(),
-        {
-          sourceFileId: uploadResponse.$id,
-          sourceLanguage,
-          targetLanguage,
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-        }
-      );
+      if (uploadError) throw uploadError;
 
-      setTranslationId(translationRequest.$id);
+      // Create translation request in database
+      const { data: translationData, error: translationError } = await supabase
+        .from('translations')
+        .insert([
+          {
+            source_file_path: fileName,
+            source_language: sourceLanguage,
+            target_language: targetLanguage,
+            status: 'pending',
+            created_at: new Date().toISOString(),
+          }
+        ])
+        .select()
+        .single();
+
+      if (translationError) throw translationError;
+
+      setTranslationId(translationData.id);
       setTranslationStatus('pending');
     } catch (error) {
       console.error('Error submitting translation:', error);

@@ -17,7 +17,7 @@ export default function Home() {
         <div className="text-center mb-12 space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-violet-400 bg-clip-text text-transparent animate-gradient relative">
             <span className="absolute inset-0 bg-gradient-to-r from-violet-400/20 via-purple-400/20 to-violet-400/20 blur-xl" />
-            Document Translator
+            PolyVox AI Document Translator
           </h1>
           <p className="text-lg text-gray-300">
             Translate your documents instantly with our AI-powered translation service
