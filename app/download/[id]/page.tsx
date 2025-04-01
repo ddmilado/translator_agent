@@ -41,12 +41,7 @@ interface DownloadPageClientProps {
   id: string;
 }
 
-export function DownloadPageClient({ id }: DownloadPageClientProps) {
-  "use client";
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  interface Translation {
+interface Translation {
   id: string;
   source_language: string;
   target_language: string;
@@ -54,6 +49,12 @@ export function DownloadPageClient({ id }: DownloadPageClientProps) {
   translated_file_path?: string;
   created_at: string;
 }
+
+export function DownloadPageClient({ id }: DownloadPageClientProps) {
+  "use client";
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
 const [translation, setTranslation] = useState<Translation | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
