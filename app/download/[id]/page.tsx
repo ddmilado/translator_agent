@@ -1,3 +1,35 @@
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+
+interface PageProps {
+  params: {
+    id: string
+  }
+  searchParams: Record<string, string | string[] | undefined>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  return {
+    title: `Download Translation ${params.id}`,
+  };
+}
+
+export default function Page({ params, searchParams }: PageProps) {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DownloadPageClient id={params.id} />
+    </Suspense>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+    </div>
+  );
+}
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -5,15 +37,25 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import Link from 'next/link';
 
-type Props = {
-  params: { id: string }
+interface DownloadPageClientProps {
+  id: string;
 }
 
-export default function DownloadPage({ params }: Props) {
+export function DownloadPageClient({ id }: DownloadPageClientProps) {
+  "use client";
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [translation, setTranslation] = useState<any>(null);
+  interface Translation {
+  id: string;
+  source_language: string;
+  target_language: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'error';
+  translated_file_path?: string;
+  created_at: string;
+}
+
+const [translation, setTranslation] = useState<Translation | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,7 +65,7 @@ export default function DownloadPage({ params }: Props) {
         const { data, error } = await supabase
           .from('translations')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', id)
           .single();
 
         if (error) throw error;
@@ -54,7 +96,7 @@ export default function DownloadPage({ params }: Props) {
     }
 
     fetchTranslation();
-  }, [params.id, router]);
+  }, [id, router]);
 
   const handleDownload = async () => {
     if (downloadUrl) {
@@ -68,11 +110,7 @@ export default function DownloadPage({ params }: Props) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (error) {
