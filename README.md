@@ -7,7 +7,7 @@ A modern Next.js application that allows users to upload documents and translate
 - Upload document files (PDF, text, etc.)
 - Select source and target languages
 - Real-time translation status updates
-- Beautiful, responsive UI with gradient design
+- Beautifull, responsive UI with gradient design
 - Secure file handling with Appwrite storage
 - Error handling and loading states
 
